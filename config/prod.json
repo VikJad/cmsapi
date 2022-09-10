@@ -1,0 +1,12 @@
+{
+  "dbConfig": {
+    "user": "",
+    "password": "",
+    "server": "",
+    "database": "",
+    "port": 1433,
+    "options": {
+      "encrypt": false
+    }
+  }
+}
