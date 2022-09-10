@@ -15,6 +15,16 @@ module.exports.userMastersUpsert = async (req, res) => {
   sendResponse(dbResponse, res)
 };
 
+module.exports.getMasterData = async (req, res) => {
+  const params = [req.query.masterName]
+  const dbResponse = await dbOps.crud('usp_getMasterData', params)
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStame: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStame: new Date() })
+  }
+};
+
 const sendResponse = (dbResponse, res) => {
   if (dbResponse[0].affectedRows > 0) {
     res.status(201).send({ message: "Record saved successfully!" })

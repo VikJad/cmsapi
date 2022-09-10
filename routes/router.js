@@ -22,6 +22,10 @@ router.post('/api/userMasterUpsert', logRequest, async (req, res) => {
   await controller.userMastersUpsert(req, res)
 })
 
+router.get('/api/getMasterData', logRequest, async (req, res) => {
+  await controller.getMasterData(req, res)
+})
+
 router.get('/api/getBrands', logRequest, async (req, res) => {
   await controller.get(req, res, 'getBrands')
 })

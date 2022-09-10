@@ -27,6 +27,18 @@ module.exports.userMastersUpsert = async (req, res) => {
 
 };
 
+module.exports.getMasterData = async (req, res) => {
+  try {
+    const data = await service.getMasterData(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
 
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {
