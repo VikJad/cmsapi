@@ -1,9 +1,9 @@
 {
   "dbConfig": {
     "connectionLimit": 5,
-    "host": "cms.cojtgkx4ls1s.us-west-2.rds.amazonaws.com",
-    "user": "admin",
-    "password": "vikram1234",
+    "host": "localhost",
+    "user": "root",
+    "password": "Vikram@1234",
     "database": "cmslms"
   }
 }
