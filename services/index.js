@@ -19,9 +19,9 @@ module.exports.getMasterData = async (req, res) => {
   const params = [req.query.masterName]
   const dbResponse = await dbOps.crud('usp_getMasterData', params)
   if (dbResponse[0].length > 0) {
-    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStame: new Date() })
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
   } else {
-    res.status(400).send({ message: "No Record found!", timeStame: new Date() })
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
   }
 };
 
@@ -36,13 +36,16 @@ module.exports.saveLeadGenerationData = async (req, res) => {
   const jsonData = req.body;
   console.log(JSON.stringify(jsonData))
   const dbResponse = await dbOps.crud('usp_saveLeadGenerationData', JSON.stringify(jsonData))
-  
+
   sendResponse(dbResponse, res)
 };
 
 module.exports.updateLeadData = async (req, res) => {
   const bodyData = req.body;
-  const params = [bodyData.leadId, bodyData.remark, bodyData.statusId, bodyData.actionBy]
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
   const dbResponse = await dbOps.crud('usp_updateLeadData', params)
   sendResponse(dbResponse, res)
 };
@@ -57,15 +60,60 @@ module.exports.assignLeads = async (req, res) => {
 module.exports.getLeadData = async (req, res) => {
   const bodyData = req.body;
   let params = [];
-  for(let i of Object.keys(bodyData)){
+  for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
   const dbResponse = await dbOps.crud('usp_getLeadData', params)
   if (dbResponse[0].length > 0) {
-    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStame: new Date() })
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
   } else {
-    res.status(400).send({ message: "No Record found!", timeStame: new Date() })
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
   }
+};
+
+module.exports.upsertCatalogue = async (req, res) => {
+  const bodyData = req.body;
+  const opType = bodyData.catId === 0 ? 1 : 2
+  const params = [opType, bodyData.catId, bodyData.catType, bodyData.price, bodyData.description, bodyData.catStatus, bodyData.actionBy]
+  const dbResponse = await dbOps.crud('usp_poductcatalogue_crud', params)
+  sendResponse(dbResponse, res)
+};
+
+module.exports.getCatalogue = async (req, res) => {
+  const bodyData = req.body;
+  let params = [3, bodyData.catId, '', 0, '', 0, 0];
+  const dbResponse = await dbOps.crud('usp_poductcatalogue_crud', params)
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+};
+
+module.exports.saveQuotation = async (req, res) => {
+  const bodyData = req.body;
+  console.log(bodyData)
+  const params = [bodyData]
+  const dbResponse = await dbOps.crud('usp_quotation_save', JSON.stringify(params))
+  sendResponse(dbResponse, res)
+};
+
+module.exports.getQuotationData = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_getQuotationData', params)
+
+  if (dbResponse[0].length > 0) {
+    let allData = dbResponse[0][0].map(x => ({...x, instalments: dbResponse[0][1].filter(l => l.parentId === x.id)}))
+    res.status(200).send({ message: "Record found!", data: allData, timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+
 };
 
 const sendResponse = (dbResponse, res) => {

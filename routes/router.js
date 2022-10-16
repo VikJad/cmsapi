@@ -46,4 +46,20 @@ router.post('/api/getAdvancedLeadData', logRequest, async (req, res) => {
   await controller.getAdvancedLeadData(req, res)
 })
 
+router.post('/api/upsertCatalogue', logRequest, async (req, res) => {
+  await controller.upsertCatalogue(req, res)
+})
+
+router.post('/api/getCatalogue', logRequest, async (req, res) => {
+  await controller.getCatalogue(req, res)
+})
+
+router.post('/api/saveQuotation', logRequest, async (req, res) => {
+  await controller.saveQuotation(req, res)
+})
+
+router.post('/api/getQuotationData', logRequest, async (req, res) => {
+  await controller.getQuotationData(req, res)
+})
+
 module.exports = router;

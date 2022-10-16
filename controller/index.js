@@ -98,6 +98,42 @@ module.exports.getAdvancedLeadData = async (req, res) => {
 };
 
 
+module.exports.upsertCatalogue = async (req, res) => {
+  try {
+    await service.upsertCatalogue(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getCatalogue = async (req, res) => {
+  try {
+    await service.getCatalogue(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.saveQuotation = async (req, res) => {
+  try {
+    await service.saveQuotation(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {
     res.status(200).send({ "timeStamp": new Date(), message: "Records found", "data": data, 'count': length || data.length })
@@ -107,6 +143,18 @@ const sendResponse = (req, res, data, length) => {
     return
   }
 }
+
+module.exports.getQuotationData = async (req, res) => {
+  try {
+    await service.getQuotationData(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
 
 module.exports.validateRequest = (req, res, next) => {
   let bodyData = req.body;
