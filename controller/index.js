@@ -134,16 +134,6 @@ module.exports.saveQuotation = async (req, res) => {
 
 };
 
-const sendResponse = (req, res, data, length) => {
-  if (data.length > 0) {
-    res.status(200).send({ "timeStamp": new Date(), message: "Records found", "data": data, 'count': length || data.length })
-    return
-  } else {
-    res.status(400).send({ "timeStamp": new Date(), message: "No Record(s) Found" })
-    return
-  }
-}
-
 module.exports.getQuotationData = async (req, res) => {
   try {
     await service.getQuotationData(req, res)
@@ -155,6 +145,65 @@ module.exports.getQuotationData = async (req, res) => {
   }
 
 };
+
+module.exports.saveInvoiceData = async (req, res) => {
+  try {
+    await service.saveInvoiceData(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getInvoiceData = async (req, res) => {
+  try {
+    await service.getInvoiceData(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.updateProductInstalment = async (req, res) => {
+  try {
+    await service.updateProductInstalment(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getDashboardData = async (req, res) => {
+  try {
+    await service.getDashboardData(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+
+const sendResponse = (req, res, data, length) => {
+  if (data.length > 0) {
+    res.status(200).send({ "timeStamp": new Date(), message: "Records found", "data": data, 'count': length || data.length })
+    return
+  } else {
+    res.status(400).send({ "timeStamp": new Date(), message: "No Record(s) Found" })
+    return
+  }
+}
 
 module.exports.validateRequest = (req, res, next) => {
   let bodyData = req.body;

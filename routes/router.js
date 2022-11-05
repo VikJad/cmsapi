@@ -62,4 +62,20 @@ router.post('/api/getQuotationData', logRequest, async (req, res) => {
   await controller.getQuotationData(req, res)
 })
 
+router.post('/api/saveInvoice', logRequest, async (req, res) => {
+  await controller.saveInvoiceData(req, res)
+})
+
+router.post('/api/getInvoiceData', logRequest, async (req, res) => {
+  await controller.getInvoiceData(req, res)
+})
+
+router.post('/api/updateProductInstalment', logRequest, async (req, res) => {
+  await controller.updateProductInstalment(req, res)
+})
+
+router.post('/api/getDashboardData', logRequest, async (req, res) => {
+  await controller.getDashboardData(req, res)
+})
+
 module.exports = router;
