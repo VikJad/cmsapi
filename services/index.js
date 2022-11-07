@@ -1,5 +1,6 @@
 `use strict`
 const dbOps = require('../utils/dbOps')
+const bcrypt = require('bcrypt');
 
 module.exports.mastersUpsert = async (req, res) => {
   const body = req.body;
@@ -10,7 +11,9 @@ module.exports.mastersUpsert = async (req, res) => {
 
 module.exports.userMastersUpsert = async (req, res) => {
   const body = req.body;
-  const params = [body.id, body.firstName, body.lastName, body.email, body.lastActive, body.roleId, body.createdBy, body.updatedBy]
+  body.password = await hashPassword(req.body.password)
+  const params = [body.id, body.firstName, body.lastName, body.email, body.lastActive, body.userRoleId, body.createdBy, body.updatedBy, body.password, body.mobileNo,
+  body.alternateMobileNo, body.userName, body.recodStatus]
   const dbResponse = await dbOps.crud('usp_userMasterUpsert', params)
   sendResponse(dbResponse, res)
 };
@@ -25,12 +28,12 @@ module.exports.getMasterData = async (req, res) => {
   }
 };
 
-module.exports.userMastersUpsert = async (req, res) => {
-  const body = req.body;
-  const params = [body.id, body.firstName, body.lastName, body.email, body.lastActive, body.roleId, body.createdBy, body.updatedBy]
-  const dbResponse = await dbOps.crud('usp_userMasterUpsert', params)
-  sendResponse(dbResponse, res)
-};
+// module.exports.userMastersUpsert = async (req, res) => {
+//   const body = req.body;
+//   const params = [body.id, body.firstName, body.lastName, body.email, body.lastActive, body.roleId, body.createdBy, body.updatedBy, ]
+//   const dbResponse = await dbOps.crud('usp_userMasterUpsert', params)
+//   sendResponse(dbResponse, res)
+// };
 
 module.exports.saveLeadGenerationData = async (req, res) => {
   const jsonData = req.body;
@@ -107,7 +110,7 @@ module.exports.getQuotationData = async (req, res) => {
   const dbResponse = await dbOps.crud('usp_getQuotationData', params)
 
   if (dbResponse[0].length > 0) {
-    let allData = dbResponse[0][0].map(x => ({...x, instalments: dbResponse[0][1].filter(l => l.parentId === x.id)}))
+    let allData = dbResponse[0][0].map(x => ({ ...x, instalments: dbResponse[0][1].filter(l => l.parentId === x.id) }))
     res.status(200).send({ message: "Record found!", data: allData, timeStamp: new Date() })
   } else {
     res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
@@ -134,7 +137,7 @@ module.exports.getInvoiceData = async (req, res) => {
   const dbResponse = await dbOps.crud('usp_getInvoiceData', params)
 
   if (dbResponse[0].length > 0) {
-    let allData = dbResponse[0][0].map(x => ({...x, instalments: dbResponse[0][1].filter(l => l.parentId === x.id)}))
+    let allData = dbResponse[0][0].map(x => ({ ...x, instalments: dbResponse[0][1].filter(l => l.parentId === x.id) }))
     res.status(200).send({ message: "Record found!", data: allData, timeStamp: new Date() })
   } else {
     res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
@@ -169,6 +172,28 @@ module.exports.getDashboardData = async (req, res) => {
 
 
 };
+
+module.exports.login = async (req, res) => {
+  const bodyData = req.body;
+  let params = [bodyData.userName];
+
+  const dbResponse = await dbOps.crud('usp_getUserPassword', params);
+  if (dbResponse[0][0].length > 0) {
+    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][0].password || '');
+    if (validUser) {
+      res.status(200).send({ message: "User Logged in Successfully!" })
+    } else {
+      res.status(401).send({ message: "Unauthorized User!" })
+    }
+  } else {
+    res.status(200).send({ message: "Invalid User Details" })
+  }
+}
+
+const hashPassword = async (password) => {
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
+}
 
 const sendResponse = (dbResponse, res) => {
   if (dbResponse[0].affectedRows > 0) {

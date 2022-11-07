@@ -78,4 +78,8 @@ router.post('/api/getDashboardData', logRequest, async (req, res) => {
   await controller.getDashboardData(req, res)
 })
 
+router.post('/api/userLogin', logRequest, async (req, res) => {
+  await controller.login(req, res)
+})
+
 module.exports = router;

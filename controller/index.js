@@ -194,6 +194,18 @@ module.exports.getDashboardData = async (req, res) => {
 
 };
 
+module.exports.login = async (req, res) => {
+  try {
+    await service.login(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
 
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {
