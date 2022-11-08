@@ -1,6 +1,8 @@
 `use strict`
 const dbOps = require('../utils/dbOps')
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const config = require('../config/dev.json')
 
 module.exports.mastersUpsert = async (req, res) => {
   const body = req.body;
@@ -178,10 +180,19 @@ module.exports.login = async (req, res) => {
   let params = [bodyData.userName];
 
   const dbResponse = await dbOps.crud('usp_getUserPassword', params);
+  console.log(dbResponse[0])
   if (dbResponse[0][0].length > 0) {
-    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][0].password || '');
+    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][1].password || '');
     if (validUser) {
-      res.status(200).send({ message: "User Logged in Successfully!" })
+      const token = jwt.sign(
+        { userName: bodyData.userName },
+        config.secretKey,
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      res.status(200).send({ message: "User Logged in Successfully!", 'accessToken': token })
     } else {
       res.status(401).send({ message: "Unauthorized User!" })
     }
