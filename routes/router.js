@@ -83,4 +83,12 @@ router.post('/api/userLogin', logRequest, async (req, res) => {
   await controller.login(req, res)
 })
 
+router.post('/api/saveLeadFollowups', auth, logRequest, async (req, res) => {
+  await controller.saveFollowups(req, res)
+})
+
+router.post('/api/saveLeadMeetings', auth, logRequest, async (req, res) => {
+  await controller.saveMeetings(req, res)
+})
+
 module.exports = router;

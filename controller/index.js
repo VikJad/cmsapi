@@ -206,6 +206,30 @@ module.exports.login = async (req, res) => {
 
 };
 
+module.exports.saveFollowups = async (req, res) => {
+  try {
+    await service.saveFollowups(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.saveMeetings = async (req, res) => {
+  try {
+    await service.saveMeetings(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
 
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {

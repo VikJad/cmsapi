@@ -6,7 +6,8 @@ const config = require('../config/dev.json')
 
 module.exports.mastersUpsert = async (req, res) => {
   const body = req.body;
-  const params = [body.masterName, body.id, body.inputText, body.recodStatus, body.addedBy, body.modifiedBy]
+
+  const params = [body.masterName, body.id, body.inputText, body.recodStatus, body.addedBy, body.modifiedBy, body.platformIcon, body.platformColor]
   const dbResponse = await dbOps.crud('usp_masterUpsert', params)
   sendResponse(dbResponse, res)
 };
@@ -68,9 +69,17 @@ module.exports.getLeadData = async (req, res) => {
   for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
-  const dbResponse = await dbOps.crud('usp_getLeadData', params)
+  const dbResponse = await dbOps.crud('usp_getLeadData', params);
+
   if (dbResponse[0].length > 0) {
-    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+    let responseData = dbResponse[0][0];
+    // console.log(responseData)
+    if (bodyData.leadId !== 0) {
+      responseData = responseData.map(x => ({ ...x, followupData: dbResponse[0][1], meetingData: dbResponse[0][2] }));
+      //responseData = [...responseData, ...dbResponse[0][1], ...dbResponse[0][2]];
+    }
+
+    res.status(200).send({ message: "Record found!", data: responseData, timeStamp: new Date() })
   } else {
     res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
   }
@@ -180,9 +189,9 @@ module.exports.login = async (req, res) => {
   let params = [bodyData.userName];
 
   const dbResponse = await dbOps.crud('usp_getUserPassword', params);
-  console.log(dbResponse[0])
+  console.log(dbResponse[0][0][0])
   if (dbResponse[0][0].length > 0) {
-    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][1].password || '');
+    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][0].password);
     if (validUser) {
       const token = jwt.sign(
         { userName: bodyData.userName },
@@ -200,6 +209,36 @@ module.exports.login = async (req, res) => {
     res.status(200).send({ message: "Invalid User Details" })
   }
 }
+
+module.exports.saveFollowups = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_saveLeadFollowups', params)
+  sendResponse(dbResponse, res)
+};
+
+module.exports.saveMeetings = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_saveLeadMeetings', params)
+  sendResponse(dbResponse, res)
+};
+
+module.exports.updateProductInstalment = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_updateProductInstalment', params)
+  sendResponse(dbResponse, res)
+};
 
 const hashPassword = async (password) => {
   const saltRounds = 10;
