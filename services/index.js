@@ -191,7 +191,7 @@ module.exports.login = async (req, res) => {
   const dbResponse = await dbOps.crud('usp_getUserPassword', params);
   console.log(dbResponse[0][0])
   if (dbResponse[0][0].length > 0) {
-    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][0].password);
+    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][1].password);
     if (validUser) {
       const token = jwt.sign(
         { userName: bodyData.userName },
