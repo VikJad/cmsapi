@@ -189,7 +189,7 @@ module.exports.login = async (req, res) => {
   let params = [bodyData.userName];
 
   const dbResponse = await dbOps.crud('usp_getUserPassword', params);
-  console.log(dbResponse[0][0][0])
+  console.log(dbResponse[0][0])
   if (dbResponse[0][0].length > 0) {
     const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][0].password);
     if (validUser) {
