@@ -185,6 +185,7 @@ module.exports.getDashboardData = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
+console.log(true)
   const bodyData = req.body;
   let params = [bodyData.userName];
 

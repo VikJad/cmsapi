@@ -196,6 +196,7 @@ module.exports.getDashboardData = async (req, res) => {
 
 module.exports.login = async (req, res) => {
   try {
+console.log('controller')
     await service.login(req, res)
 
   } catch (error) {
