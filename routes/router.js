@@ -3,6 +3,10 @@ const controller = require("../controller");
 const logger = require('../logger')
 const validate = require('../models')
 const auth = require('../utils/auth')
+const multer = require("multer");
+const path = require("path");
+const appDir = path.dirname(require.main.filename);
+const crypto = require("crypto");
 
 const logRequest = (req, res, next) => {
   try {
@@ -14,12 +18,49 @@ const logRequest = (req, res, next) => {
 
 }
 
+let file_name;
+
+const pdfFilter = (req, file, cb) => {
+  if (file.mimetype.includes("pdf")) {
+    cb(null, true);
+  } else {
+    cb("Please upload only pdf file.", false);
+  }
+};
+
+let storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    console.log(req.originalUrl)
+    let endpoint = req.originalUrl.split('/')
+    endpoint = endpoint[endpoint.length - 1]
+    if (endpoint === 'saveQuotation') {
+      endpoint = 'quotation';
+    } else {
+      endpoint = 'invoice';
+    }
+    cb(null, path.resolve(appDir, `uploads/${endpoint}`));
+  },
+  filename: (req, file, cb) => {
+    console.log(file.originalname);
+    file_name = `${crypto.randomBytes(16).toString("hex")}.${file.originalname.split(".")[1]
+      }`;
+    //console.log(fileName);
+    cb(null, file_name);
+  },
+});
+
+const upload = multer({ storage: storage, fileFilter: pdfFilter });
+
 
 router.post('/api/mastersUpsert', auth, logRequest, async (req, res) => {
   await controller.mastersUpsert(req, res)
 })
 
 router.post('/api/userMasterUpsert', auth, logRequest, async (req, res) => {
+  await controller.userMastersUpsert(req, res)
+})
+
+router.post('/api/specialUserInsert', logRequest, async (req, res) => {
   await controller.userMastersUpsert(req, res)
 })
 
@@ -55,7 +96,8 @@ router.post('/api/getCatalogue', auth, logRequest, async (req, res) => {
   await controller.getCatalogue(req, res)
 })
 
-router.post('/api/saveQuotation', auth, logRequest, async (req, res) => {
+router.post('/api/saveQuotation', auth, logRequest, upload.single("file"), async (req, res) => {
+  req.fileName = file_name;
   await controller.saveQuotation(req, res)
 })
 
@@ -63,7 +105,8 @@ router.post('/api/getQuotationData', auth, logRequest, async (req, res) => {
   await controller.getQuotationData(req, res)
 })
 
-router.post('/api/saveInvoice', auth, logRequest, async (req, res) => {
+router.post('/api/saveInvoice', auth, logRequest, upload.single("file"), async (req, res) => {
+  req.fileName = file_name;
   await controller.saveInvoiceData(req, res)
 })
 

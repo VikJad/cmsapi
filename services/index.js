@@ -3,6 +3,10 @@ const dbOps = require('../utils/dbOps')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../config/dev.json')
+const nodemailer = require('nodemailer')
+const path = require("path");
+const appDir = path.dirname(require.main.filename);
+const fs = require('fs')
 
 module.exports.mastersUpsert = async (req, res) => {
   const body = req.body;
@@ -105,11 +109,22 @@ module.exports.getCatalogue = async (req, res) => {
 };
 
 module.exports.saveQuotation = async (req, res) => {
-  const bodyData = req.body;
+  const bodyData = JSON.parse(req.body.data);
   console.log(bodyData)
   const params = [bodyData]
   const dbResponse = await dbOps.crud('usp_quotation_save', JSON.stringify(params))
-  sendResponse(dbResponse, res)
+  if (dbResponse[0][0].length > 0) {
+    fs.renameSync(path.resolve(appDir, `uploads/quotation/${req.fileName}`), path.resolve(appDir, `uploads/quotation/${dbResponse[0][0][0].quotationNumber}.pdf`))
+
+    sendMail(dbResponse[0][0][0].quotationNumber, bodyData.clientEmail, req.fileName)
+
+    res.status(201).send({ message: `Quotation Created : ${dbResponse[0][0][0].quotationNumber}`, data: dbResponse[0][0], timeStamp: new Date() })
+
+  } else {
+    res.status(500).send({ message: "Quotation not saved", timeStamp: new Date() })
+  }
+
+
 };
 
 module.exports.getQuotationData = async (req, res) => {
@@ -132,11 +147,20 @@ module.exports.getQuotationData = async (req, res) => {
 
 
 module.exports.saveInvoiceData = async (req, res) => {
-  const bodyData = req.body;
-  console.log(bodyData)
+  const bodyData = JSON.parse(req.body.data);
+  // console.log(bodyData)
   const params = [bodyData]
   const dbResponse = await dbOps.crud('usp_invoice_save', JSON.stringify(params))
-  sendResponse(dbResponse, res)
+  if (dbResponse[0][0].length > 0) {
+    fs.renameSync(path.resolve(appDir, `uploads/invoice/${req.fileName}`), path.resolve(appDir, `uploads/invoice/${dbResponse[0][0][0].invoiceNumber}.pdf`))
+
+    sendInvoiceMail(dbResponse[0][0][0].invoiceNumber, bodyData.clientEmail, req.fileName)
+
+    res.status(201).send({ message: `invoice Created : ${dbResponse[0][0][0].invoiceNumber}`, data: dbResponse[0][0], timeStamp: new Date() })
+
+  } else {
+    res.status(500).send({ message: "invoice not saved", timeStamp: new Date() })
+  }
 };
 
 module.exports.getInvoiceData = async (req, res) => {
@@ -185,14 +209,13 @@ module.exports.getDashboardData = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
-console.log(true)
   const bodyData = req.body;
   let params = [bodyData.userName];
 
   const dbResponse = await dbOps.crud('usp_getUserPassword', params);
-  console.log(dbResponse[0][0])
+  console.log(dbResponse[0][0][1])
   if (dbResponse[0][0].length > 0) {
-    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][1].password);
+    const validUser = await bcrypt.compare(req.body.password, dbResponse[0][0][0].password);
     if (validUser) {
       const token = jwt.sign(
         { userName: bodyData.userName },
@@ -202,7 +225,10 @@ console.log(true)
         }
       );
 
-      res.status(200).send({ message: "User Logged in Successfully!", 'accessToken': token })
+      res.status(200).send({
+        message: "User Logged in Successfully!",
+        'accessToken': token, roleName: dbResponse[0][0][0].roleName, userName: dbResponse[0][0][0].userName
+      })
     } else {
       res.status(401).send({ message: "Unauthorized User!" })
     }
@@ -253,4 +279,76 @@ const sendResponse = (dbResponse, res) => {
     res.status(500).send({ message: "Something went wrong" })
   }
   return
+}
+
+const sendMail = async (quotationNumber, userEmail) => {
+
+  let emailData = `This is quotation email. Quotation Number ${quotationNumber}`
+
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'com.mailutil@gmail.com',
+      pass: 'wfbjlggujydbgyme'
+    }
+  });
+  const fileLocation = path.resolve(appDir, `uploads/quotation/${quotationNumber}.pdf`);
+  const mailOptions = {
+    from: 'The Idea project',
+    to: userEmail,
+    subject: 'CMS Quotation!!',
+    html: emailData,
+    attachments: [
+      {   // use URL as an attachment
+        filename: `${quotationNumber}.pdf`,
+        path: fileLocation
+      }
+    ]
+  };
+
+  transporter.sendMail(mailOptions, (err, data) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('mail sent')
+    }
+  })
+  //res.send('mail sent')
+}
+
+const sendInvoiceMail = async (invoiceNumber, userEmail) => {
+
+  let emailData = `This is invoice email. Invoice Number ${invoiceNumber}`
+
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'com.mailutil@gmail.com',
+      pass: 'wfbjlggujydbgyme'
+    }
+  });
+  const fileLocation = path.resolve(appDir, `uploads/invoice/${invoiceNumber}.pdf`);
+  const mailOptions = {
+    from: 'The Idea project',
+    to: userEmail,
+    subject: 'CMS Invoice!!',
+    html: emailData,
+    attachments: [
+      {   // use URL as an attachment
+        filename: `${invoiceNumber}.pdf`,
+        path: fileLocation
+      }
+    ]
+  };
+
+  transporter.sendMail(mailOptions, (err, data) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('mail sent')
+    }
+  })
+  //res.send('mail sent')
 }
