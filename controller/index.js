@@ -134,6 +134,18 @@ module.exports.saveQuotation = async (req, res) => {
 
 };
 
+module.exports.sendQuotationMail = async (req, res) => {
+  try {
+    await service.sendQuotationMail(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
 module.exports.getQuotationData = async (req, res) => {
   try {
     await service.getQuotationData(req, res)
@@ -149,6 +161,17 @@ module.exports.getQuotationData = async (req, res) => {
 module.exports.saveInvoiceData = async (req, res) => {
   try {
     await service.saveInvoiceData(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+module.exports.sendInvoiceMail = async (req, res) => {
+  try {
+    await service.sendInvoiceMail(req, res)
 
   } catch (error) {
     console.log(error)
@@ -230,6 +253,125 @@ module.exports.saveMeetings = async (req, res) => {
 
 };
 
+module.exports.digitalCardUpsert = async (req, res) => {
+  try {
+    await service.digitalCardUpsert(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getDigitalCard = async (req, res) => {
+  try {
+    await service.getDigitalCard(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.saveCompanyMaster = async (req, res) => {
+  try {
+    await service.saveCompanyMaster(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.updateCompanyMaster = async (req, res) => {
+  try {
+    await service.updateCompanyMaster(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.updateCompanyAccounts = async (req, res) => {
+  try {
+    await service.updateCompanyAccounts(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getCompanyMaster = async (req, res) => {
+  try {
+    await service.getCompanyMaster(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getLeadStatusCount = async (req, res) => {
+  try {
+    await service.getLeadStatusCount(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getPendingInstalments = async (req, res) => {
+  try {
+    await service.getPendingInstalments(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getRenewalInstalments = async (req, res) => {
+  try {
+    await service.getRenewalInstalments(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.sendReminderMail = async (req, res) => {
+  try {
+    await service.sendReminderMail(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
 
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {

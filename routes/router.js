@@ -33,7 +33,7 @@ let storage = multer.diskStorage({
     console.log(req.originalUrl)
     let endpoint = req.originalUrl.split('/')
     endpoint = endpoint[endpoint.length - 1]
-    if (endpoint === 'saveQuotation') {
+    if (endpoint === 'sendQuotationMail') {
       endpoint = 'quotation';
     } else {
       endpoint = 'invoice';
@@ -96,18 +96,27 @@ router.post('/api/getCatalogue', auth, logRequest, async (req, res) => {
   await controller.getCatalogue(req, res)
 })
 
-router.post('/api/saveQuotation', auth, logRequest, upload.single("file"), async (req, res) => {
-  req.fileName = file_name;
+router.post('/api/saveQuotation', auth, logRequest, async (req, res) => {
   await controller.saveQuotation(req, res)
 })
 
-router.post('/api/getQuotationData', auth, logRequest, async (req, res) => {
+router.post('/api/getQuotationData', auth, logRequest,  async (req, res) => {
+
   await controller.getQuotationData(req, res)
 })
 
-router.post('/api/saveInvoice', auth, logRequest, upload.single("file"), async (req, res) => {
+router.post('/api/sendQuotationMail', auth, logRequest, upload.single("file"), async (req, res) => {
   req.fileName = file_name;
+  await controller.sendQuotationMail(req, res)
+})
+
+router.post('/api/saveInvoice', auth, logRequest, async (req, res) => {
   await controller.saveInvoiceData(req, res)
+})
+
+router.post('/api/sendInvoiceMail', auth, logRequest, upload.single("file"), async (req, res) => {
+  req.fileName = file_name;
+  await controller.sendInvoiceMail(req, res)
 })
 
 router.post('/api/getInvoiceData', auth, logRequest, async (req, res) => {
@@ -132,6 +141,46 @@ router.post('/api/saveLeadFollowups', auth, logRequest, async (req, res) => {
 
 router.post('/api/saveLeadMeetings', auth, logRequest, async (req, res) => {
   await controller.saveMeetings(req, res)
+})
+
+router.post('/api/digitalCardUpsert', auth, logRequest, async (req, res) => {
+  await controller.digitalCardUpsert(req, res)
+})
+
+router.post('/api/getDigitalCard', auth, logRequest, async (req, res) => {
+  await controller.getDigitalCard(req, res)
+})
+
+router.post('/api/saveCompanyMaster', auth, logRequest, async (req, res) => {
+  await controller.saveCompanyMaster(req, res)
+})
+
+router.post('/api/updateCompanyMaster', auth, logRequest, async (req, res) => {
+  await controller.updateCompanyMaster(req, res)
+})
+
+router.post('/api/updateCompanyAccounts', auth, logRequest, async (req, res) => {
+  await controller.updateCompanyAccounts(req, res)
+})
+
+router.post('/api/getCompanyMaster', auth, logRequest, async (req, res) => {
+  await controller.getCompanyMaster(req, res)
+})
+
+router.get('/api/getLeadStatusCount', auth, logRequest, async (req, res) => {
+  await controller.getLeadStatusCount(req, res)
+})
+
+router.post('/api/getPendingInstalments', auth, logRequest, async (req, res) => {
+  await controller.getPendingInstalments(req, res)
+})
+
+router.post('/api/getRenewalInstalments', auth, logRequest, async (req, res) => {
+  await controller.getRenewalInstalments(req, res)
+})
+
+router.post('/api/sendReminderMail', auth, logRequest, async (req, res) => {
+  await controller.sendReminderMail(req, res)
 })
 
 module.exports = router;

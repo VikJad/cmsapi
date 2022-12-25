@@ -7,6 +7,7 @@ const nodemailer = require('nodemailer')
 const path = require("path");
 const appDir = path.dirname(require.main.filename);
 const fs = require('fs')
+const mailUtil = require('../utils/mail')
 
 module.exports.mastersUpsert = async (req, res) => {
   const body = req.body;
@@ -109,15 +110,11 @@ module.exports.getCatalogue = async (req, res) => {
 };
 
 module.exports.saveQuotation = async (req, res) => {
-  const bodyData = JSON.parse(req.body.data);
+  const bodyData = req.body;
   console.log(bodyData)
   const params = [bodyData]
   const dbResponse = await dbOps.crud('usp_quotation_save', JSON.stringify(params))
   if (dbResponse[0][0].length > 0) {
-    fs.renameSync(path.resolve(appDir, `uploads/quotation/${req.fileName}`), path.resolve(appDir, `uploads/quotation/${dbResponse[0][0][0].quotationNumber}.pdf`))
-
-    sendMail(dbResponse[0][0][0].quotationNumber, bodyData.clientEmail, req.fileName)
-
     res.status(201).send({ message: `Quotation Created : ${dbResponse[0][0][0].quotationNumber}`, data: dbResponse[0][0], timeStamp: new Date() })
 
   } else {
@@ -126,6 +123,15 @@ module.exports.saveQuotation = async (req, res) => {
 
 
 };
+
+module.exports.sendQuotationMail = async (req, res) => {
+  const bodyData = JSON.parse(req.body.data);
+  fs.renameSync(path.resolve(appDir, `uploads/quotation/${req.fileName}`), path.resolve(appDir, `uploads/quotation/${bodyData.quotationNumber}.pdf`))
+
+  sendMail(bodyData.quotationNumber, bodyData.clientEmail, req.fileName)
+
+  res.status(200).send({ message: `Mail sent : ${bodyData.quotationNumber}`, timeStamp: new Date() })
+}
 
 module.exports.getQuotationData = async (req, res) => {
   const bodyData = req.body;
@@ -147,14 +153,14 @@ module.exports.getQuotationData = async (req, res) => {
 
 
 module.exports.saveInvoiceData = async (req, res) => {
-  const bodyData = JSON.parse(req.body.data);
+  const bodyData = req.body;
   // console.log(bodyData)
   const params = [bodyData]
   const dbResponse = await dbOps.crud('usp_invoice_save', JSON.stringify(params))
   if (dbResponse[0][0].length > 0) {
-    fs.renameSync(path.resolve(appDir, `uploads/invoice/${req.fileName}`), path.resolve(appDir, `uploads/invoice/${dbResponse[0][0][0].invoiceNumber}.pdf`))
+    // fs.renameSync(path.resolve(appDir, `uploads/invoice/${req.fileName}`), path.resolve(appDir, `uploads/invoice/${dbResponse[0][0][0].invoiceNumber}.pdf`))
 
-    sendInvoiceMail(dbResponse[0][0][0].invoiceNumber, bodyData.clientEmail, req.fileName)
+    // sendInvoiceMail(dbResponse[0][0][0].invoiceNumber, bodyData.clientEmail, req.fileName)
 
     res.status(201).send({ message: `invoice Created : ${dbResponse[0][0][0].invoiceNumber}`, data: dbResponse[0][0], timeStamp: new Date() })
 
@@ -162,6 +168,15 @@ module.exports.saveInvoiceData = async (req, res) => {
     res.status(500).send({ message: "invoice not saved", timeStamp: new Date() })
   }
 };
+
+module.exports.sendInvoiceMail = async (req, res) => {
+  const bodyData = JSON.parse(req.body.data);
+  fs.renameSync(path.resolve(appDir, `uploads/invoice/${req.fileName}`), path.resolve(appDir, `uploads/invoice/${bodyData.invoiceNumber}.pdf`))
+
+  sendInvoiceMail(bodyData.invoiceNumber, bodyData.clientEmail, req.fileName)
+
+  res.status(200).send({ message: `Mail sent : ${bodyData.invoiceNumber}`, timeStamp: new Date() })
+}
 
 module.exports.getInvoiceData = async (req, res) => {
   const bodyData = req.body;
@@ -266,6 +281,133 @@ module.exports.updateProductInstalment = async (req, res) => {
   const dbResponse = await dbOps.crud('usp_updateProductInstalment', params)
   sendResponse(dbResponse, res)
 };
+
+module.exports.digitalCardUpsert = async (req, res) => {
+  const bodyData = req.body;
+  const params = [bodyData._id, bodyData.name, bodyData.profileRole, bodyData.mobileNo1, bodyData.mobileNo2, bodyData.email,
+  bodyData.address, bodyData.recordStatus, bodyData.lastActive, bodyData.createdBy, bodyData.updatedBy, bodyData.dob, bodyData.gender]
+  const dbResponse = await dbOps.crud('usp_digitalCardUpsert', params)
+  sendResponse(dbResponse, res)
+};
+
+module.exports.getDigitalCard = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_getDigitalCard', params)
+
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+
+};
+
+module.exports.saveCompanyMaster = async (req, res) => {
+  const bodyData = req.body;
+  // console.log(bodyData)
+  const params = [bodyData]
+  const dbResponse = await dbOps.crud('usp_saveCompanyMaster', JSON.stringify(params))
+  console.log(dbResponse)
+  if (dbResponse[0].affectedRows > 0) {
+    sendResponse(dbResponse, res)
+  } else {
+    res.status(500).send({ message: "Record not saved", timeStamp: new Date() })
+  }
+};
+
+module.exports.updateCompanyMaster = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_updateCompanyMaster', params)
+  sendResponse(dbResponse, res)
+};
+
+module.exports.updateCompanyAccounts = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_updateCompanyAccounts', params)
+  sendResponse(dbResponse, res)
+};
+
+module.exports.getCompanyMaster = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_getCompanyMaster', params)
+
+  if (dbResponse[0].length > 0) {
+    let allData = dbResponse[0][0].map(x => ({ ...x, accounts: dbResponse[0][1].filter(l => l.companyId === x.id) }))
+    res.status(200).send({ message: "Record found!", data: allData, timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+
+};
+
+module.exports.getLeadStatusCount = async (req, res) => {
+
+  const dbResponse = await dbOps.crud('usp_getLeadStatusCount', [])
+
+  if (dbResponse[0][0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+
+};
+
+module.exports.getPendingInstalments = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_getPendingInstalments', params)
+
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+
+};
+
+module.exports.getRenewalInstalments = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_getRenewalInstalments', params)
+
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+
+};
+
+module.exports.sendReminderMail = async (req, res) => {
+  mailUtil.sendReminderMail(req, res)
+}
 
 const hashPassword = async (password) => {
   const saltRounds = 10;
