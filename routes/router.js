@@ -183,4 +183,8 @@ router.post('/api/sendReminderMail', auth, logRequest, async (req, res) => {
   await controller.sendReminderMail(req, res)
 })
 
+router.post('/api/saveLeadRenewalData', auth, logRequest, async (req, res) => {
+  await controller.saveLeadRenewalData(req, res)
+})
+
 module.exports = router;

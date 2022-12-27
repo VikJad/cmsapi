@@ -409,6 +409,19 @@ module.exports.sendReminderMail = async (req, res) => {
   mailUtil.sendReminderMail(req, res)
 }
 
+module.exports.saveLeadRenewalData = async (req, res) => {
+  const bodyData = req.body;
+  // console.log(bodyData)
+  const params = [bodyData]
+  const dbResponse = await dbOps.crud('usp_leadRenewal', JSON.stringify(params))
+  if (dbResponse[0][0].length > 0) {
+    res.status(201).send({ message: `invoice Created : ${dbResponse[0][0][0].invoiceNumber}`, data: dbResponse[0][0], timeStamp: new Date() })
+
+  } else {
+    res.status(500).send({ message: "invoice not saved", timeStamp: new Date() })
+  }
+};
+
 const hashPassword = async (password) => {
   const saltRounds = 10;
   return await bcrypt.hash(password, saltRounds);

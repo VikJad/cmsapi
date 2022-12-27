@@ -169,6 +169,7 @@ module.exports.saveInvoiceData = async (req, res) => {
   }
 
 };
+
 module.exports.sendInvoiceMail = async (req, res) => {
   try {
     await service.sendInvoiceMail(req, res)
@@ -364,6 +365,18 @@ module.exports.getRenewalInstalments = async (req, res) => {
 module.exports.sendReminderMail = async (req, res) => {
   try {
     await service.sendReminderMail(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.saveLeadRenewalData = async (req, res) => {
+  try {
+    await service.saveLeadRenewalData(req, res)
 
   } catch (error) {
     console.log(error)
