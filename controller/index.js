@@ -137,7 +137,10 @@ module.exports.saveQuotation = async (req, res) => {
 module.exports.sendQuotationMail = async (req, res) => {
   try {
     await service.sendQuotationMail(req, res)
-
+    const bodyData = JSON.parse(req.body.data);
+    let params = {statusId: bodyData.statusId, identifier: bodyData.quotationNumber, reqType: 1}
+    req.body = params;
+    await service.updateQuotationInvoice(req, res)
   } catch (error) {
     console.log(error)
     logger.error(error.toString())
@@ -173,7 +176,10 @@ module.exports.saveInvoiceData = async (req, res) => {
 module.exports.sendInvoiceMail = async (req, res) => {
   try {
     await service.sendInvoiceMail(req, res)
-
+    const bodyData = JSON.parse(req.body.data);
+    let params = {statusId: bodyData.statusId, identifier: bodyData.invoiceNumber, reqType: 2}
+    req.body = params;
+    await service.updateQuotationInvoice(req, res)
   } catch (error) {
     console.log(error)
     logger.error(error.toString())
@@ -377,6 +383,30 @@ module.exports.sendReminderMail = async (req, res) => {
 module.exports.saveLeadRenewalData = async (req, res) => {
   try {
     await service.saveLeadRenewalData(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.updateUserPassword = async (req, res) => {
+  try {
+    await service.updateUserPassword(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.resetUserPassword = async (req, res) => {
+  try {
+    await service.resetUserPassword(req, res)
 
   } catch (error) {
     console.log(error)

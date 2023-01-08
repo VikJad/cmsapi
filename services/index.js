@@ -14,6 +14,7 @@ module.exports.mastersUpsert = async (req, res) => {
 
   const params = [body.masterName, body.id, body.inputText, body.recodStatus, body.addedBy, body.modifiedBy, body.platformIcon, body.platformColor]
   const dbResponse = await dbOps.crud('usp_masterUpsert', params)
+  console.log(dbResponse)
   sendResponse(dbResponse, res)
 };
 
@@ -422,6 +423,32 @@ module.exports.saveLeadRenewalData = async (req, res) => {
   }
 };
 
+module.exports.updateQuotationInvoice = async (req, res) => {
+  const bodyData = req.body;
+  // console.log(bodyData)
+  const params = [bodyData]
+  const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', JSON.stringify(params))
+  if (dbResponse[0][0].length > 0) {
+    res.status(200).send({ message: `Data updated successfully`, timeStamp: new Date() })
+  } else {
+    res.status(500).send({ message: "data not updated", timeStamp: new Date() })
+  }
+};
+
+module.exports.updateUserPassword = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  bodyData.userPassword = await hashPassword(bodyData.userPassword)
+
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  params.push('')
+  const dbResponse = await dbOps.crud('usp_updateUserPassword', params)
+
+  sendResponse(dbResponse, res)
+};
+
 const hashPassword = async (password) => {
   const saltRounds = 10;
   return await bcrypt.hash(password, saltRounds);
@@ -472,6 +499,7 @@ const sendMail = async (quotationNumber, userEmail) => {
   //res.send('mail sent')
 }
 
+
 const sendInvoiceMail = async (invoiceNumber, userEmail) => {
 
   let emailData = `This is invoice email. Invoice Number ${invoiceNumber}`
@@ -506,4 +534,45 @@ const sendInvoiceMail = async (invoiceNumber, userEmail) => {
     }
   })
   //res.send('mail sent')
+}
+
+
+module.exports.resetUserPassword = async (req, res) => {
+
+  let randomPassword = Math.random().toString(36).slice(2)
+  let params = [];
+  params.push(0)
+  params.push(await hashPassword(randomPassword))
+  params.push(req.query.userEmail)
+  const dbResponse = await dbOps.crud('usp_updateUserPassword', params)
+
+  if (dbResponse[0].affectedRows > 0) {
+  let emailData = `Please use system generated password : ${randomPassword}`
+
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'com.mailutil@gmail.com',
+      pass: 'wfbjlggujydbgyme'
+    }
+  });
+  const mailOptions = {
+    from: 'The Idea project',
+    to: req.query.userEmail,
+    subject: 'CRM Password Reset!!',
+    html: emailData,
+  };
+
+  transporter.sendMail(mailOptions, (err, data) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('mail sent')
+    }
+  })
+  res.status(200).send({ message: 'Password reset successful, Please check the email' })
+} else {
+  res.status(500).send({ message: "Something went wrong" })
+}
 }

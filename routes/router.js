@@ -187,4 +187,12 @@ router.post('/api/saveLeadRenewalData', auth, logRequest, async (req, res) => {
   await controller.saveLeadRenewalData(req, res)
 })
 
+router.post('/api/updateUserPassword', auth, logRequest, async (req, res) => {
+  await controller.updateUserPassword(req, res)
+})
+
+router.get('/api/resetUserPassword', logRequest, async (req, res) => {
+  await controller.resetUserPassword(req, res)
+})
+
 module.exports = router;
