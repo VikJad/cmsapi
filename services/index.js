@@ -413,7 +413,7 @@ module.exports.sendReminderMail = async (req, res) => {
 module.exports.saveLeadRenewalData = async (req, res) => {
   const bodyData = req.body;
   // console.log(bodyData)
-  const params = [bodyData]
+  const params = bodyData
   const dbResponse = await dbOps.crud('usp_leadRenewal', JSON.stringify(params))
   if (dbResponse[0][0].length > 0) {
     res.status(201).send({ message: `invoice Created : ${dbResponse[0][0][0].invoiceNumber}`, data: dbResponse[0][0], timeStamp: new Date() })
@@ -426,8 +426,8 @@ module.exports.saveLeadRenewalData = async (req, res) => {
 module.exports.updateQuotationInvoice = async (req, res) => {
   const bodyData = req.body;
   // console.log(bodyData)
-  const params = [bodyData]
-  const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', JSON.stringify(params))
+  const params = bodyData
+  const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', params)
   if (dbResponse[0][0].length > 0) {
     res.status(200).send({ message: `Data updated successfully`, timeStamp: new Date() })
   } else {

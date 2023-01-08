@@ -138,7 +138,7 @@ module.exports.sendQuotationMail = async (req, res) => {
   try {
     await service.sendQuotationMail(req, res)
     const bodyData = JSON.parse(req.body.data);
-    let params = {statusId: bodyData.statusId, identifier: bodyData.quotationNumber, reqType: 1}
+    let params = [bodyData.statusId, bodyData.quotationNumber, 1]
     req.body = params;
     await service.updateQuotationInvoice(req, res)
   } catch (error) {
@@ -177,7 +177,7 @@ module.exports.sendInvoiceMail = async (req, res) => {
   try {
     await service.sendInvoiceMail(req, res)
     const bodyData = JSON.parse(req.body.data);
-    let params = {statusId: bodyData.statusId, identifier: bodyData.invoiceNumber, reqType: 2}
+    let params = [bodyData.statusId, bodyData.invoiceNumber, 2]
     req.body = params;
     await service.updateQuotationInvoice(req, res)
   } catch (error) {
