@@ -416,6 +416,56 @@ module.exports.resetUserPassword = async (req, res) => {
 
 };
 
+module.exports.assignBulkLeads = async (req, res) => {
+  try {
+    await service.assignBulkLeads(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getLeadsByEmployee = async (req, res) => {
+  try {
+    await service.getLeadsByEmployee(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.transferLeads = async (req, res) => {
+  try {
+    await service.transferLeads(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+module.exports.getAdvancedDashboardData = async (req, res, spName) => {
+  try {
+    await service.getAdvancedDashboardData(req, res, spName)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
+
+
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {
     res.status(200).send({ "timeStamp": new Date(), message: "Records found", "data": data, 'count': length || data.length })

@@ -449,6 +449,79 @@ module.exports.updateUserPassword = async (req, res) => {
   sendResponse(dbResponse, res)
 };
 
+module.exports.assignBulkLeads = async (req, res) => {
+  let params = [];
+  const bodyData = req.body;
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_assignBulkLeads', params)
+
+  sendResponse(dbResponse, res)
+}
+
+module.exports.getLeadsByEmployee = async (req, res) => {
+  let params = [];
+  const bodyData = req.body;
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_getLeadsByEmployee', params)
+
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+}
+
+module.exports.transferLeads = async (req, res) => {
+  let params = [];
+  const bodyData = req.body;
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud('usp_transferLeads', params)
+
+  sendResponse(dbResponse, res)
+}
+
+module.exports.getAdvancedDashboardData = async (req, res, spName) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  const dbResponse = await dbOps.crud(spName, params)
+
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const hashPassword = async (password) => {
   const saltRounds = 10;
   return await bcrypt.hash(password, saltRounds);
@@ -547,32 +620,32 @@ module.exports.resetUserPassword = async (req, res) => {
   const dbResponse = await dbOps.crud('usp_updateUserPassword', params)
 
   if (dbResponse[0].affectedRows > 0) {
-  let emailData = `Please use system generated password : ${randomPassword}`
+    let emailData = `Please use system generated password : ${randomPassword}`
 
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'com.mailutil@gmail.com',
-      pass: 'wfbjlggujydbgyme'
-    }
-  });
-  const mailOptions = {
-    from: 'The Idea project',
-    to: req.query.userEmail,
-    subject: 'CRM Password Reset!!',
-    html: emailData,
-  };
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'com.mailutil@gmail.com',
+        pass: 'wfbjlggujydbgyme'
+      }
+    });
+    const mailOptions = {
+      from: 'The Idea project',
+      to: req.query.userEmail,
+      subject: 'CRM Password Reset!!',
+      html: emailData,
+    };
 
-  transporter.sendMail(mailOptions, (err, data) => {
-    if (err) {
-      console.log(err)
-    } else {
-      console.log('mail sent')
-    }
-  })
-  res.status(200).send({ message: 'Password reset successful, Please check the email' })
-} else {
-  res.status(500).send({ message: "Something went wrong" })
-}
+    transporter.sendMail(mailOptions, (err, data) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('mail sent')
+      }
+    })
+    res.status(200).send({ message: 'Password reset successful, Please check the email' })
+  } else {
+    res.status(500).send({ message: "Something went wrong" })
+  }
 }
