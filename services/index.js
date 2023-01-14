@@ -101,7 +101,7 @@ module.exports.upsertCatalogue = async (req, res) => {
 
 module.exports.getCatalogue = async (req, res) => {
   const bodyData = req.body;
-  let params = [3, bodyData.catId, '', 0, '', 0, 0, ''];
+  let params = [3, bodyData.catId, '', 0, '', 0, 0, '', 0];
   const dbResponse = await dbOps.crud('usp_poductcatalogue_crud', params)
   if (dbResponse[0].length > 0) {
     res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
