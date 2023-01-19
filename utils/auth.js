@@ -8,6 +8,12 @@ const verifyToken = (req, res, next) => {
     if (!token) {
         return res.status(403).send({ message: "A token is required for authentication" });
     }
+    if (!req.headers["rolecode"]) {
+        return res.status(401).send({ message: "Authentication failed!" });
+    }
+    if (!req.headers["userid"]) {
+        return res.status(401).send({ message: "Authentication failed!" });
+    }
     try {
         const decoded = jwt.verify(token, config.secretKey);
         req.headers.access_token = decoded;

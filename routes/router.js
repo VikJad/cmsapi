@@ -56,7 +56,7 @@ router.post('/api/mastersUpsert', auth, logRequest, async (req, res) => {
   await controller.mastersUpsert(req, res)
 })
 
-router.post('/api/userMasterUpsert', auth, logRequest, async (req, res) => {
+router.post('/api/userMasterUpsert', logRequest, async (req, res) => {
   await controller.userMastersUpsert(req, res)
 })
 
@@ -191,39 +191,39 @@ router.post('/api/updateUserPassword', auth, logRequest, async (req, res) => {
   await controller.updateUserPassword(req, res)
 })
 
-router.get('/api/resetUserPassword', logRequest, async (req, res) => {
+router.get('/api/resetUserPassword', auth, logRequest, async (req, res) => {
   await controller.resetUserPassword(req, res)
 })
 
-router.post('/api/assignBulkLeads', logRequest, async (req, res) => {
+router.post('/api/assignBulkLeads', auth, logRequest, async (req, res) => {
   await controller.assignBulkLeads(req, res)
 })
 
-router.post('/api/getLeadsByEmployee', logRequest, async (req, res) => {
+router.post('/api/getLeadsByEmployee', auth, logRequest, async (req, res) => {
   await controller.getLeadsByEmployee(req, res)
 })
 
-router.post('/api/transferLeads', logRequest, async (req, res) => {
+router.post('/api/transferLeads', auth, logRequest, async (req, res) => {
   await controller.transferLeads(req, res)
 })
 
-router.post('/api/getAdvancedDashboardData', logRequest, async (req, res) => {
+router.post('/api/getAdvancedDashboardData', auth, logRequest, async (req, res) => {
   await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardData_2')
 })
 
-router.post('/api/getDashboardDataByLabel', logRequest, async (req, res) => {
+router.post('/api/getDashboardDataByLabel', auth, logRequest, async (req, res) => {
   await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardDataByLabel')
 })
 
-router.post('/api/getDashboardOrderGainData', logRequest, async (req, res) => {
+router.post('/api/getDashboardOrderGainData', auth, logRequest, async (req, res) => {
   await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardOrderGainData')
 })
 
-router.post('/api/getDashboardOrderLossData', logRequest, async (req, res) => {
+router.post('/api/getDashboardOrderLossData', auth, logRequest, async (req, res) => {
   await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardOrderLossData')
 })
 
-router.post('/api/getDashboardTotalLeadData', logRequest, async (req, res) => {
+router.post('/api/getDashboardTotalLeadData', auth, logRequest, async (req, res) => {
   await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardTotalLeadData')
 })
 

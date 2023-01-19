@@ -11,7 +11,8 @@ const mailUtil = require('../utils/mail')
 
 module.exports.mastersUpsert = async (req, res) => {
   const body = req.body;
-
+  body.addedBy = req.headers['userid']
+  body.modifiedBy = req.headers['userid']
   const params = [body.masterName, body.id, body.inputText, body.recodStatus, body.addedBy, body.modifiedBy, body.platformIcon, body.platformColor]
   const dbResponse = await dbOps.crud('usp_masterUpsert', params)
   console.log(dbResponse)
@@ -21,8 +22,10 @@ module.exports.mastersUpsert = async (req, res) => {
 module.exports.userMastersUpsert = async (req, res) => {
   const body = req.body;
   body.password = await hashPassword(req.body.password)
+  body.createdBy = req.headers['userid']
+  body.updatedBy = req.headers['userid']
   const params = [body.id, body.firstName, body.lastName, body.email, body.lastActive, body.userRoleId, body.createdBy, body.updatedBy, body.password, body.mobileNo,
-  body.alternateMobileNo, body.userName, body.recodStatus]
+  body.alternateMobileNo, body.userName, body.recodStatus, body.branchId, body.tlId, body.branchManagerId]
   const dbResponse = await dbOps.crud('usp_userMasterUpsert', params)
   sendResponse(dbResponse, res)
 };
@@ -47,6 +50,7 @@ module.exports.getMasterData = async (req, res) => {
 module.exports.saveLeadGenerationData = async (req, res) => {
   const jsonData = req.body;
   console.log(JSON.stringify(jsonData))
+  //req.headers['userid']
   const dbResponse = await dbOps.crud('usp_saveLeadGenerationData', JSON.stringify(jsonData))
 
   sendResponse(dbResponse, res)
@@ -64,6 +68,7 @@ module.exports.updateLeadData = async (req, res) => {
 
 module.exports.assignLeads = async (req, res) => {
   const bodyData = req.body;
+  bodyData.actionBy = req.headers['userid']
   const params = [bodyData.source_id, bodyData.leadCount, bodyData.assignedUserId, bodyData.actionBy]
   const dbResponse = await dbOps.crud('usp_assignLeads', params)
   sendResponse(dbResponse, res)
@@ -94,6 +99,7 @@ module.exports.getLeadData = async (req, res) => {
 module.exports.upsertCatalogue = async (req, res) => {
   const bodyData = req.body;
   const opType = bodyData.catId === 0 ? 1 : 2
+  bodyData.actionBy = req.headers['userid']
   const params = [opType, bodyData.catId, bodyData.catType, bodyData.price, bodyData.description, bodyData.catStatus, bodyData.actionBy, bodyData.gsName, bodyData.durationId]
   const dbResponse = await dbOps.crud('usp_poductcatalogue_crud', params)
   sendResponse(dbResponse, res)
@@ -243,7 +249,8 @@ module.exports.login = async (req, res) => {
 
       res.status(200).send({
         message: "User Logged in Successfully!",
-        'accessToken': token, roleName: dbResponse[0][0][0].roleName, userName: dbResponse[0][0][0].userName
+        'accessToken': token, roleName: dbResponse[0][0][0].roleName, userName: dbResponse[0][0][0].userName, 
+        roleCode: dbResponse[0][0][0].roleCode, userId: dbResponse[0][0][0].userId
       })
     } else {
       res.status(401).send({ message: "Unauthorized User!" })
