@@ -215,10 +215,12 @@ module.exports.updateProductInstalment = async (req, res) => {
 
 module.exports.getDashboardData = async (req, res) => {
   const bodyData = req.body;
+  bodyData.empId = req.headers['userid']
   let params = [];
   for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
+  params.push(req.headers['rolecode'])
   const dbResponse = await dbOps.crud('usp_getDashboardData', params)
 
   if (dbResponse[0].length > 0) {
@@ -495,10 +497,12 @@ module.exports.transferLeads = async (req, res) => {
  
 module.exports.getAdvancedDashboardData = async (req, res, spName) => {
   const bodyData = req.body;
+  bodyData.empId = req.headers['userid']
   let params = [];
   for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
+  params.push(req.headers['rolecode'])
   const dbResponse = await dbOps.crud(spName, params)
 
   if (dbResponse[0].length > 0) {
@@ -511,7 +515,16 @@ module.exports.getAdvancedDashboardData = async (req, res, spName) => {
 
 
 
-
+module.exports.emailTemplateUpsert = async (req, res) => {
+  const bodyData = req.body;
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  params.push(req.headers['userid']);
+  const dbResponse = await dbOps.crud('usp_emailTemplateUpsert', params)
+  sendResponse(dbResponse, res)
+};
 
 
 

@@ -110,6 +110,18 @@ module.exports.upsertCatalogue = async (req, res) => {
 
 };
 
+module.exports.emailTemplateUpsert = async (req, res) => {
+  try {
+    await service.emailTemplateUpsert(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
 module.exports.getCatalogue = async (req, res) => {
   try {
     await service.getCatalogue(req, res)

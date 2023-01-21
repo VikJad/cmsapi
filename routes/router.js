@@ -56,7 +56,7 @@ router.post('/api/mastersUpsert', auth, logRequest, async (req, res) => {
   await controller.mastersUpsert(req, res)
 })
 
-router.post('/api/userMasterUpsert', logRequest, async (req, res) => {
+router.post('/api/userMasterUpsert', auth, logRequest, async (req, res) => {
   await controller.userMastersUpsert(req, res)
 })
 
@@ -90,6 +90,10 @@ router.post('/api/getAdvancedLeadData', auth, logRequest, async (req, res) => {
 
 router.post('/api/upsertCatalogue', auth, logRequest, async (req, res) => {
   await controller.upsertCatalogue(req, res)
+})
+
+router.post('/api/emailTemplateUpsert', auth, logRequest, async (req, res) => {
+  await controller.emailTemplateUpsert(req, res)
 })
 
 router.post('/api/getCatalogue', auth, logRequest, async (req, res) => {
