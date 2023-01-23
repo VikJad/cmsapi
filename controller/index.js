@@ -476,7 +476,17 @@ module.exports.getAdvancedDashboardData = async (req, res, spName) => {
 
 };
 
+module.exports.getEmailTemplate = async (req, res) => {
+  try {
+    await service.getEmailTemplate(req, res)
 
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
 
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {

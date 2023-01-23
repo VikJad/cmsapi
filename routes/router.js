@@ -231,4 +231,8 @@ router.post('/api/getDashboardTotalLeadData', auth, logRequest, async (req, res)
   await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardTotalLeadData')
 })
 
+router.get('/api/getEmailTemplate', auth, logRequest, async (req, res) => {
+  await controller.getEmailTemplate(req, res)
+})
+
 module.exports = router;

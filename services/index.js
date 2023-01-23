@@ -135,9 +135,9 @@ module.exports.sendQuotationMail = async (req, res) => {
   const bodyData = JSON.parse(req.body.data);
   fs.renameSync(path.resolve(appDir, `uploads/quotation/${req.fileName}`), path.resolve(appDir, `uploads/quotation/${bodyData.quotationNumber}.pdf`))
 
-  sendMail(bodyData.quotationNumber, bodyData.clientEmail, req.fileName)
+  return sendMail(bodyData.quotationNumber, bodyData.clientEmail, req.fileName)
 
-  res.status(200).send({ message: `Mail sent : ${bodyData.quotationNumber}`, timeStamp: new Date() })
+  //res.status(200).send({ message: `Mail sent : ${bodyData.quotationNumber}`, timeStamp: new Date() })
 }
 
 module.exports.getQuotationData = async (req, res) => {
@@ -251,7 +251,7 @@ module.exports.login = async (req, res) => {
 
       res.status(200).send({
         message: "User Logged in Successfully!",
-        'accessToken': token, roleName: dbResponse[0][0][0].roleName, userName: dbResponse[0][0][0].userName, 
+        'accessToken': token, roleName: dbResponse[0][0][0].roleName, userName: dbResponse[0][0][0].userName,
         roleCode: dbResponse[0][0][0].roleCode, userId: dbResponse[0][0][0].userId
       })
     } else {
@@ -437,11 +437,13 @@ module.exports.updateQuotationInvoice = async (req, res) => {
   // console.log(bodyData)
   const params = bodyData
   const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', params)
-  if (dbResponse[0][0].length > 0) {
-    res.status(200).send({ message: `Data updated successfully`, timeStamp: new Date() })
-  } else {
-    res.status(500).send({ message: "data not updated", timeStamp: new Date() })
-  }
+  sendResponse(dbResponse, res)
+  // console.log(dbResponse)
+  // if (dbResponse[0][0].length > 0) {
+  //   res.status(200).send({ message: `Data updated successfully`, timeStamp: new Date() })
+  // } else {
+  //   res.status(500).send({ message: "data not updated", timeStamp: new Date() })
+  // }
 };
 
 module.exports.updateUserPassword = async (req, res) => {
@@ -494,16 +496,12 @@ module.exports.transferLeads = async (req, res) => {
 
   sendResponse(dbResponse, res)
 }
- 
-module.exports.getAdvancedDashboardData = async (req, res, spName) => {
-  const bodyData = req.body;
-  bodyData.empId = req.headers['userid']
+
+module.exports.getEmailTemplate = async (req, res) => {
   let params = [];
-  for (let i of Object.keys(bodyData)) {
-    params.push(bodyData[i])
-  }
-  params.push(req.headers['rolecode'])
-  const dbResponse = await dbOps.crud(spName, params)
+  params.push(req.query._id ? req.query._id : 0)
+  //params.push(req.headers['rolecode'])
+  const dbResponse = await dbOps.crud('usp_getEmailTemplate', params)
 
   if (dbResponse[0].length > 0) {
     res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
@@ -526,7 +524,23 @@ module.exports.emailTemplateUpsert = async (req, res) => {
   sendResponse(dbResponse, res)
 };
 
+module.exports.getEmailTemplates = async (req, res, spName) => {
+  const bodyData = req.body;
+  bodyData.empId = req.headers['userid']
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  params.push(req.headers['rolecode'])
+  const dbResponse = await dbOps.crud(spName, params)
 
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+};
 
 
 
@@ -559,7 +573,9 @@ const sendMail = async (quotationNumber, userEmail) => {
 
   let emailData = `This is quotation email. Quotation Number ${quotationNumber}`
 
-
+  // let emailData = await dbOps.crud('usp_getEmailTemplate', [0])
+  // emailData = emailData[0][0][0].emailBody;
+  console.log(emailData)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
