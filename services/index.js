@@ -497,6 +497,24 @@ module.exports.transferLeads = async (req, res) => {
   sendResponse(dbResponse, res)
 }
 
+module.exports.getAdvancedDashboardData = async (req, res, spName) => {
+  const bodyData = req.body;
+  bodyData.empId = req.headers['userid']
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  params.push(req.headers['rolecode'])
+  const dbResponse = await dbOps.crud(spName, params)
+
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+};
+
 module.exports.getEmailTemplate = async (req, res) => {
   let params = [];
   params.push(req.query._id ? req.query._id : 0)
