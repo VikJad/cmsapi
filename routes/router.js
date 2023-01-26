@@ -175,7 +175,7 @@ router.post('/api/getLeadStatusCount', auth, logRequest, async (req, res) => {
   await controller.getLeadStatusCount(req, res)
 })
 
-router.post('/api/getPendingInsta lments', auth, logRequest, async (req, res) => {
+router.post('/api/getPendingInstalments', auth, logRequest, async (req, res) => {
   await controller.getPendingInstalments(req, res)
 })
 
@@ -190,6 +190,8 @@ router.post('/api/sendReminderMail', auth, logRequest, async (req, res) => {
 router.post('/api/saveLeadRenewalData', auth, logRequest, async (req, res) => {
   await controller.saveLeadRenewalData(req, res)
 })
+
+
 
 router.post('/api/updateUserPassword', auth, logRequest, async (req, res) => {
   await controller.updateUserPassword(req, res)
