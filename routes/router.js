@@ -171,11 +171,11 @@ router.post('/api/getCompanyMaster', auth, logRequest, async (req, res) => {
   await controller.getCompanyMaster(req, res)
 })
 
-router.get('/api/getLeadStatusCount', auth, logRequest, async (req, res) => {
+router.post('/api/getLeadStatusCount', auth, logRequest, async (req, res) => {
   await controller.getLeadStatusCount(req, res)
 })
 
-router.post('/api/getPendingInstalments', auth, logRequest, async (req, res) => {
+router.post('/api/getPendingInsta lments', auth, logRequest, async (req, res) => {
   await controller.getPendingInstalments(req, res)
 })
 

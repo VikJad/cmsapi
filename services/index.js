@@ -369,8 +369,15 @@ module.exports.getCompanyMaster = async (req, res) => {
 };
 
 module.exports.getLeadStatusCount = async (req, res) => {
+  const bodyData = req.body;
+  bodyData.empId = req.headers['userid']
+  let params = [];
+  for (let i of Object.keys(bodyData)) {
+    params.push(bodyData[i])
+  }
+  params.push(req.headers['rolecode'])
 
-  const dbResponse = await dbOps.crud('usp_getLeadStatusCount', [])
+  const dbResponse = await dbOps.crud('usp_getLeadStatusCount', params)
 
   if (dbResponse[0][0].length > 0) {
     res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
@@ -589,10 +596,11 @@ const sendResponse = (dbResponse, res) => {
 
 const sendMail = async (quotationNumber, userEmail) => {
 
-  let emailData = `This is quotation email. Quotation Number ${quotationNumber}`
+  //let emailData = `This is quotation email. Quotation Number ${quotationNumber}`
 
-  // let emailData = await dbOps.crud('usp_getEmailTemplate', [0])
-  // emailData = emailData[0][0][0].emailBody;
+   let emailData = await dbOps.crud('usp_getEmailTemplate', [0])
+   let emailSubject = emailData[0][0][0].emailSubject;
+   emailData = emailData[0][0][0].emailBody;
   console.log(emailData)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -605,7 +613,7 @@ const sendMail = async (quotationNumber, userEmail) => {
   const mailOptions = {
     from: 'The Idea project',
     to: userEmail,
-    subject: 'CMS Quotation!!',
+    subject: emailSubject,
     html: emailData,
     attachments: [
       {   // use URL as an attachment
@@ -628,8 +636,10 @@ const sendMail = async (quotationNumber, userEmail) => {
 
 const sendInvoiceMail = async (invoiceNumber, userEmail) => {
 
-  let emailData = `This is invoice email. Invoice Number ${invoiceNumber}`
-
+  // let emailData = `This is invoice email. Invoice Number ${invoiceNumber}`
+  let emailData = await dbOps.crud('usp_getEmailTemplate', [0])
+  let emailSubject = emailData[0][0][0].emailSubject;
+  emailData = emailData[0][0][0].emailBody;
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -642,7 +652,7 @@ const sendInvoiceMail = async (invoiceNumber, userEmail) => {
   const mailOptions = {
     from: 'The Idea project',
     to: userEmail,
-    subject: 'CMS Invoice!!',
+    subject: emailSubject,
     html: emailData,
     attachments: [
       {   // use URL as an attachment
