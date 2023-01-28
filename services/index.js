@@ -135,7 +135,7 @@ module.exports.sendQuotationMail = async (req, res) => {
   const bodyData = JSON.parse(req.body.data);
   fs.renameSync(path.resolve(appDir, `uploads/quotation/${req.fileName}`), path.resolve(appDir, `uploads/quotation/${bodyData.quotationNumber}.pdf`))
 
-  return sendMail(bodyData.quotationNumber, bodyData.clientEmail, req.fileName)
+  return sendMail(bodyData.quotationNumber, bodyData.clientEmail, req.fileName, bodyData.emailTemplateId)
 
   //res.status(200).send({ message: `Mail sent : ${bodyData.quotationNumber}`, timeStamp: new Date() })
 }
@@ -180,7 +180,7 @@ module.exports.sendInvoiceMail = async (req, res) => {
   const bodyData = JSON.parse(req.body.data);
   fs.renameSync(path.resolve(appDir, `uploads/invoice/${req.fileName}`), path.resolve(appDir, `uploads/invoice/${bodyData.invoiceNumber}.pdf`))
 
-  sendInvoiceMail(bodyData.invoiceNumber, bodyData.clientEmail, req.fileName)
+  sendInvoiceMail(bodyData.invoiceNumber, bodyData.clientEmail, bodyData.emailTemplateId)
 
   res.status(200).send({ message: `Mail sent : ${bodyData.invoiceNumber}`, timeStamp: new Date() })
 }
@@ -594,11 +594,11 @@ const sendResponse = (dbResponse, res) => {
   return
 }
 
-const sendMail = async (quotationNumber, userEmail) => {
+const sendMail = async (quotationNumber, userEmail, emailTemplateId) => {
 
   //let emailData = `This is quotation email. Quotation Number ${quotationNumber}`
 
-   let emailData = await dbOps.crud('usp_getEmailTemplate', [0])
+   let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
    let emailSubject = emailData[0][0][0].emailSubject;
    emailData = emailData[0][0][0].emailBody;
   console.log(emailData)
@@ -634,10 +634,10 @@ const sendMail = async (quotationNumber, userEmail) => {
 }
 
 
-const sendInvoiceMail = async (invoiceNumber, userEmail) => {
+const sendInvoiceMail = async (invoiceNumber, userEmail, emailTemplateId) => {
 
   // let emailData = `This is invoice email. Invoice Number ${invoiceNumber}`
-  let emailData = await dbOps.crud('usp_getEmailTemplate', [0])
+  let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
   let emailSubject = emailData[0][0][0].emailSubject;
   emailData = emailData[0][0][0].emailBody;
 
