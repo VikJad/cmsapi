@@ -444,7 +444,7 @@ module.exports.updateQuotationInvoice = async (req, res) => {
   // console.log(bodyData)
   const params = bodyData
   const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', params)
-  sendResponse(dbResponse, res)
+  //sendResponse(dbResponse, res)
 
 };
 
