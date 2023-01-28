@@ -100,7 +100,7 @@ module.exports.upsertCatalogue = async (req, res) => {
   const bodyData = req.body;
   const opType = bodyData.catId === 0 ? 1 : 2
   bodyData.actionBy = req.headers['userid']
-  const params = [opType, bodyData.catId, bodyData.catType, bodyData.price, bodyData.description, bodyData.catStatus, bodyData.actionBy, bodyData.gsName, bodyData.durationId]
+  const params = [opType, bodyData.catId, bodyData.catType, bodyData.price, bodyData.description, bodyData.catStatus, bodyData.actionBy, bodyData.gsName, bodyData.durationId, bodyData.opType]
   const dbResponse = await dbOps.crud('usp_poductcatalogue_crud', params)
   sendResponse(dbResponse, res)
 };
@@ -444,13 +444,8 @@ module.exports.updateQuotationInvoice = async (req, res) => {
   // console.log(bodyData)
   const params = bodyData
   const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', params)
-  //sendResponse(dbResponse, res)
-  // console.log(dbResponse)
-  // if (dbResponse[0][0].length > 0) {
-  //   res.status(200).send({ message: `Data updated successfully`, timeStamp: new Date() })
-  // } else {
-  //   res.status(500).send({ message: "data not updated", timeStamp: new Date() })
-  // }
+  sendResponse(dbResponse, res)
+
 };
 
 module.exports.updateUserPassword = async (req, res) => {
@@ -640,7 +635,7 @@ const sendInvoiceMail = async (invoiceNumber, userEmail, emailTemplateId) => {
   console.log(emailTemplateId)
   let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
 
-console.log(emailData)
+console.log(emailData[0][0][0])
 
   let emailSubject = emailData[0][0][0].emailSubject;
   emailData = emailData[0][0][0].emailBody;
