@@ -135,7 +135,7 @@ module.exports.sendQuotationMail = async (req, res) => {
   const bodyData = JSON.parse(req.body.data);
   fs.renameSync(path.resolve(appDir, `uploads/quotation/${req.fileName}`), path.resolve(appDir, `uploads/quotation/${bodyData.quotationNumber}.pdf`))
 
-  return sendMail(bodyData.quotationNumber, bodyData.clientEmail, req.fileName, bodyData.emailTemplateId)
+  return sendMail(bodyData.quotationNumber, bodyData.clientEmail, bodyData.emailTemplateId)
 
   //res.status(200).send({ message: `Mail sent : ${bodyData.quotationNumber}`, timeStamp: new Date() })
 }
@@ -597,8 +597,8 @@ const sendResponse = (dbResponse, res) => {
 const sendMail = async (quotationNumber, userEmail, emailTemplateId) => {
 
   //let emailData = `This is quotation email. Quotation Number ${quotationNumber}`
-
    let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
+   console.log(emailData[0])
    let emailSubject = emailData[0][0][0].emailSubject;
    emailData = emailData[0][0][0].emailBody;
   console.log(emailData)
