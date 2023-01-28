@@ -444,7 +444,7 @@ module.exports.updateQuotationInvoice = async (req, res) => {
   // console.log(bodyData)
   const params = bodyData
   const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', params)
-  sendResponse(dbResponse, res)
+  //sendResponse(dbResponse, res)
   // console.log(dbResponse)
   // if (dbResponse[0][0].length > 0) {
   //   res.status(200).send({ message: `Data updated successfully`, timeStamp: new Date() })
@@ -637,7 +637,11 @@ const sendMail = async (quotationNumber, userEmail, emailTemplateId) => {
 const sendInvoiceMail = async (invoiceNumber, userEmail, emailTemplateId) => {
 
   // let emailData = `This is invoice email. Invoice Number ${invoiceNumber}`
+  console.log(emailTemplateId)
   let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
+
+console.log(emailData)
+
   let emailSubject = emailData[0][0][0].emailSubject;
   emailData = emailData[0][0][0].emailBody;
 
