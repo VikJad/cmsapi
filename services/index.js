@@ -444,7 +444,12 @@ module.exports.updateQuotationInvoice = async (req, res) => {
   // console.log(bodyData)
   const params = bodyData
   const dbResponse = await dbOps.crud('usp_updateQuotationInvoiceStatus', params)
-  //sendResponse(dbResponse, res)
+  if (dbResponse[0].affectedRows > 0) {
+    res.status(201).send({ message: "Record saved successfully!" })
+  } else {
+    res.status(500).send({ message: "Something went wrong" })
+  }
+  return
 
 };
 
