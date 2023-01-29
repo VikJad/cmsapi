@@ -100,7 +100,7 @@ module.exports.upsertCatalogue = async (req, res) => {
   const bodyData = req.body;
   const opType = bodyData.catId === 0 ? 1 : 2
   bodyData.actionBy = req.headers['userid']
-  const params = [opType, bodyData.catId, bodyData.catType, bodyData.price, bodyData.description, bodyData.catStatus, bodyData.actionBy, bodyData.gsName, bodyData.durationId, bodyData.opType]
+  const params = [opType, bodyData.catId, bodyData.catType, bodyData.price, bodyData.description, bodyData.catStatus, bodyData.actionBy, bodyData.gsName, bodyData.durationId]
   const dbResponse = await dbOps.crud('usp_poductcatalogue_crud', params)
   sendResponse(dbResponse, res)
 };
