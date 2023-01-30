@@ -15,7 +15,7 @@ module.exports.sendReminderMail = (req, res) => {
 
     const mailOptions = {
         from: 'The Idea project',
-        to: 'vikramjadhav515@gmail.com',
+        to: req.body.emailId,
         subject: 'Instalment Reminder',
         html: getReminderMailBody(req)
     };
