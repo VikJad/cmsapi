@@ -77,7 +77,7 @@ module.exports.assignLeads = async (req, res) => {
 
 module.exports.getFilteredLeadData = async (req, res) => {
   try {
-    req.body.searchKey = '', req.body.locationkey = '', req.body.platformId = 0
+    //req.body.searchKey = '', req.body.locationkey = '', req.body.platformId = 0
     await service.getLeadData(req, res)
   } catch (error) {
     console.log(error)
