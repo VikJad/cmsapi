@@ -188,9 +188,9 @@ module.exports.sendInvoiceMail = async (req, res) => {
   const bodyData = JSON.parse(req.body.data);
   fs.renameSync(path.resolve(appDir, `uploads/invoice/${req.fileName}`), path.resolve(appDir, `uploads/invoice/${bodyData.invoiceNumber}.pdf`))
 
-  sendInvoiceMail(bodyData.invoiceNumber, bodyData.clientEmail, bodyData.emailTemplateId)
+ await sendInvoiceMail(bodyData.invoiceNumber, bodyData.clientEmail, bodyData.emailTemplateId)
 
-  res.status(200).send({ message: `Mail sent : ${bodyData.invoiceNumber}`, timeStamp: new Date() })
+  //res.status(200).send({ message: `Mail sent : ${bodyData.invoiceNumber}`, timeStamp: new Date() })
 }
 
 module.exports.getInvoiceData = async (req, res) => {
