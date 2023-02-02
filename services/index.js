@@ -77,9 +77,11 @@ module.exports.assignLeads = async (req, res) => {
 module.exports.getLeadData = async (req, res) => {
   const bodyData = req.body;
   let params = [];
+  bodyData.userId = req.headers['userid']
   for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
+  params.push(req.headers['rolecode'])
   const dbResponse = await dbOps.crud('usp_getLeadData', params);
 
   if (dbResponse[0].length > 0) {
@@ -143,9 +145,15 @@ module.exports.sendQuotationMail = async (req, res) => {
 module.exports.getQuotationData = async (req, res) => {
   const bodyData = req.body;
   let params = [];
+  bodyData.empId = req.headers['userid']
   for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
+
+
+
+  params.push(req.headers['rolecode'])
+  console.log(bodyData)
   const dbResponse = await dbOps.crud('usp_getQuotationData', params)
 
   if (dbResponse[0].length > 0) {
@@ -188,9 +196,11 @@ module.exports.sendInvoiceMail = async (req, res) => {
 module.exports.getInvoiceData = async (req, res) => {
   const bodyData = req.body;
   let params = [];
+  bodyData.empId = req.headers['userid']
   for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
+  params.push(req.headers['rolecode'])
   const dbResponse = await dbOps.crud('usp_getInvoiceData', params)
 
   if (dbResponse[0].length > 0) {
