@@ -488,6 +488,18 @@ module.exports.getEmailTemplate = async (req, res) => {
 
 };
 
+module.exports.getRolewiseClosedCount = async (req, res) => {
+  try {
+    await service.getRolewiseClosedCount(req, res)
+
+  } catch (error) {
+    console.log(error)
+    logger.error(error.toString())
+    res.status(500).send({ message: 'something went wrong' })
+  }
+
+};
+
 const sendResponse = (req, res, data, length) => {
   if (data.length > 0) {
     res.status(200).send({ "timeStamp": new Date(), message: "Records found", "data": data, 'count': length || data.length })

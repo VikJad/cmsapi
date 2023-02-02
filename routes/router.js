@@ -191,8 +191,6 @@ router.post('/api/saveLeadRenewalData', auth, logRequest, async (req, res) => {
   await controller.saveLeadRenewalData(req, res)
 })
 
-
-
 router.post('/api/updateUserPassword', auth, logRequest, async (req, res) => {
   await controller.updateUserPassword(req, res)
 })
@@ -230,11 +228,15 @@ router.post('/api/getDashboardOrderLossData', auth, logRequest, async (req, res)
 })
 
 router.post('/api/getDashboardTotalLeadData', auth, logRequest, async (req, res) => {
-  await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardTotalLeadData')
+  await controller.getAdvancedDashboardData(req, res, '-')
 })
 
 router.get('/api/getEmailTemplate', auth, logRequest, async (req, res) => {
   await controller.getEmailTemplate(req, res)
+})
+
+router.get('/api/getRolewiseClosedCount', auth, logRequest, async (req, res) => {
+  await controller.getRolewiseClosedCount(req, res)
 })
 
 module.exports = router;

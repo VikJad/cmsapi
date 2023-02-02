@@ -400,10 +400,12 @@ module.exports.getLeadStatusCount = async (req, res) => {
 
 module.exports.getPendingInstalments = async (req, res) => {
   const bodyData = req.body;
+  bodyData.userId = req.headers['userid']
   let params = [];
   for (let i of Object.keys(bodyData)) {
     params.push(bodyData[i])
   }
+  params.push(req.headers['rolecode'])
   const dbResponse = await dbOps.crud('usp_getPendingInstalments', params)
 
   if (dbResponse[0].length > 0) {
@@ -568,6 +570,18 @@ module.exports.getEmailTemplates = async (req, res, spName) => {
   }
   params.push(req.headers['rolecode'])
   const dbResponse = await dbOps.crud(spName, params)
+
+  if (dbResponse[0].length > 0) {
+    res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
+  } else {
+    res.status(400).send({ message: "No Record found!", timeStamp: new Date() })
+  }
+
+};
+
+module.exports.getRolewiseClosedCount = async (req, res) => {
+  
+  const dbResponse = await dbOps.crud('usp_getRolewiseClosedCount', [req.headers['rolecode'], req.headers['userid']])
 
   if (dbResponse[0].length > 0) {
     res.status(200).send({ message: "Record found!", data: dbResponse[0][0], timeStamp: new Date() })
