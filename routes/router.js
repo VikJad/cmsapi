@@ -228,7 +228,7 @@ router.post('/api/getDashboardOrderLossData', auth, logRequest, async (req, res)
 })
 
 router.post('/api/getDashboardTotalLeadData', auth, logRequest, async (req, res) => {
-  await controller.getAdvancedDashboardData(req, res, '-')
+  await controller.getAdvancedDashboardData(req, res, 'usp_getDashboardTotalLeadData')
 })
 
 router.get('/api/getEmailTemplate', auth, logRequest, async (req, res) => {
