@@ -262,7 +262,7 @@ module.exports.login = async (req, res) => {
       res.status(200).send({
         message: "User Logged in Successfully!",
         'accessToken': token, roleName: dbResponse[0][0][0].roleName, userName: dbResponse[0][0][0].userName,
-        roleCode: dbResponse[0][0][0].roleCode, userId: dbResponse[0][0][0].userId
+        roleCode: dbResponse[0][0][0].roleCode, userId: dbResponse[0][0][0].userId, branchName: dbResponse[0][0][0].branchName
       })
     } else {
       res.status(401).send({ message: "Unauthorized User!" })
@@ -406,6 +406,7 @@ module.exports.getPendingInstalments = async (req, res) => {
     params.push(bodyData[i])
   }
   params.push(req.headers['rolecode'])
+  console.log(params)
   const dbResponse = await dbOps.crud('usp_getPendingInstalments', params)
 
   if (dbResponse[0].length > 0) {
