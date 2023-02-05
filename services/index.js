@@ -255,7 +255,7 @@ module.exports.login = async (req, res) => {
         { userName: bodyData.userName },
         config.secretKey,
         {
-          expiresIn: "1h",
+          expiresIn: "9h",
         }
       );
 
