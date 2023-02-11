@@ -26,6 +26,14 @@ module.exports.userMastersUpsert = async (req, res) => {
   body.updatedBy = req.headers['userid']
   const params = [body.id, body.firstName, body.lastName, body.email, body.lastActive, body.userRoleId, body.createdBy, body.updatedBy, body.password, body.mobileNo,
   body.alternateMobileNo, body.userName, body.recodStatus, body.branchId, body.tlId, body.branchManagerId]
+
+  if (body.id === 0) {
+    const resp = await dbOps.crud('usp_validateUser', [body.mobileNo, body.email, body.userName])
+    if (resp[0][0][0].count > 0) {
+      return res.status(400).send({ 'message': 'User already exists' })
+    }
+  }
+
   const dbResponse = await dbOps.crud('usp_userMasterUpsert', params)
   sendResponse(dbResponse, res)
 };
@@ -188,7 +196,7 @@ module.exports.sendInvoiceMail = async (req, res) => {
   const bodyData = JSON.parse(req.body.data);
   fs.renameSync(path.resolve(appDir, `uploads/invoice/${req.fileName}`), path.resolve(appDir, `uploads/invoice/${bodyData.invoiceNumber}.pdf`))
 
- await sendInvoiceMail(bodyData.invoiceNumber, bodyData.clientEmail, bodyData.emailTemplateId)
+  await sendInvoiceMail(bodyData.invoiceNumber, bodyData.clientEmail, bodyData.emailTemplateId)
 
   //res.status(200).send({ message: `Mail sent : ${bodyData.invoiceNumber}`, timeStamp: new Date() })
 }
@@ -581,7 +589,7 @@ module.exports.getEmailTemplates = async (req, res, spName) => {
 };
 
 module.exports.getRolewiseClosedCount = async (req, res) => {
-  
+
   const dbResponse = await dbOps.crud('usp_getRolewiseClosedCount', [req.headers['rolecode'], req.headers['userid']])
 
   if (dbResponse[0].length > 0) {
@@ -622,10 +630,10 @@ const sendResponse = (dbResponse, res) => {
 const sendMail = async (quotationNumber, userEmail, emailTemplateId) => {
 
   //let emailData = `This is quotation email. Quotation Number ${quotationNumber}`
-   let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
-   console.log(emailData[0])
-   let emailSubject = emailData[0][0][0].emailSubject;
-   emailData = emailData[0][0][0].emailBody;
+  let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
+  console.log(emailData[0])
+  let emailSubject = emailData[0][0][0].emailSubject;
+  emailData = emailData[0][0][0].emailBody;
   console.log(emailData)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -665,7 +673,7 @@ const sendInvoiceMail = async (invoiceNumber, userEmail, emailTemplateId) => {
   console.log(emailTemplateId)
   let emailData = await dbOps.crud('usp_getEmailTemplate', [emailTemplateId])
 
-console.log(emailData[0][0][0])
+  console.log(emailData[0][0][0])
 
   let emailSubject = emailData[0][0][0].emailSubject;
   emailData = emailData[0][0][0].emailBody;

@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 const appDir = path.dirname(require.main.filename);
 const crypto = require("crypto");
+const model = require('../utils/model')
 
 const logRequest = (req, res, next) => {
   try {
@@ -52,11 +53,11 @@ let storage = multer.diskStorage({
 const upload = multer({ storage: storage, fileFilter: pdfFilter });
 
 
-router.post('/api/mastersUpsert', auth, logRequest, async (req, res) => {
+router.post('/api/mastersUpsert', auth, model.validateMaster, logRequest, async (req, res) => {
   await controller.mastersUpsert(req, res)
 })
 
-router.post('/api/userMasterUpsert', auth, logRequest, async (req, res) => {
+router.post('/api/userMasterUpsert', auth, model.validateUser, logRequest, async (req, res) => {
   await controller.userMastersUpsert(req, res)
 })
 
@@ -68,7 +69,7 @@ router.get('/api/getMasterData', auth, logRequest, async (req, res) => {
   await controller.getMasterData(req, res)
 })
 
-router.post('/api/saveLeadGenerationData', auth, logRequest, controller.validateRequest, async (req, res) => {
+router.post('/api/saveLeadGenerationData', auth, logRequest, model.validateLead, async (req, res) => {
   await controller.saveLeadGenerationData(req, res)
 })
 
@@ -88,7 +89,7 @@ router.post('/api/getAdvancedLeadData', auth, logRequest, async (req, res) => {
   await controller.getAdvancedLeadData(req, res)
 })
 
-router.post('/api/upsertCatalogue', auth, logRequest, async (req, res) => {
+router.post('/api/upsertCatalogue', auth, model.validateCatalogue, logRequest, async (req, res) => {
   await controller.upsertCatalogue(req, res)
 })
 
@@ -100,7 +101,7 @@ router.post('/api/getCatalogue', auth, logRequest, async (req, res) => {
   await controller.getCatalogue(req, res)
 })
 
-router.post('/api/saveQuotation', auth, logRequest, async (req, res) => {
+router.post('/api/saveQuotation', auth, model.validateQuotation, logRequest, async (req, res) => {
   await controller.saveQuotation(req, res)
 })
 
@@ -114,7 +115,7 @@ router.post('/api/sendQuotationMail', auth, logRequest, upload.single("file"), a
   await controller.sendQuotationMail(req, res)
 })
 
-router.post('/api/saveInvoice', auth, logRequest, async (req, res) => {
+router.post('/api/saveInvoice', auth, model.validateInvoice, logRequest, async (req, res) => {
   await controller.saveInvoiceData(req, res)
 })
 
