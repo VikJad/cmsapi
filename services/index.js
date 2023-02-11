@@ -61,7 +61,11 @@ module.exports.saveLeadGenerationData = async (req, res) => {
   //req.headers['userid']
   const dbResponse = await dbOps.crud('usp_saveLeadGenerationData', JSON.stringify(jsonData))
 
-  sendResponse(dbResponse, res)
+  if (dbResponse[0].affectedRows > 0 || dbResponse[0].affectedRows === 0) {
+    res.status(201).send({ message: "Record saved successfully!" })
+  } else {
+    res.status(500).send({ message: "Something went wrong" })
+  }
 };
 
 module.exports.updateLeadData = async (req, res) => {
