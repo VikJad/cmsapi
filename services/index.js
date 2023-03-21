@@ -723,9 +723,14 @@ module.exports.resetUserPassword = async (req, res) => {
   params.push(req.query.userEmail)
   const dbResponse = await dbOps.crud('usp_updateUserPassword', params)
 
-  if (dbResponse[0].affectedRows > 0) {
+  if (dbResponse[0][0].length > 0) {
     let emailData = `Please use system generated password : ${randomPassword}`
+    let toMail = req.query.userEmail;
 
+    if (req.headers['rolecode'] === 'EMP' || req.headers['rolecode'] === 'TL') {
+      emailData = `Password has been reset for the ${req.headers['rolecode']} : ${req.query.userEmail}, Password: ${randomPassword}`
+      toMail = dbResponse[0][0][0].email;
+    }
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -736,7 +741,7 @@ module.exports.resetUserPassword = async (req, res) => {
     });
     const mailOptions = {
       from: 'The Idea project',
-      to: req.query.userEmail,
+      to: toMail,
       subject: 'CRM Password Reset!!',
       html: emailData,
     };
