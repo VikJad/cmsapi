@@ -727,9 +727,13 @@ module.exports.resetUserPassword = async (req, res) => {
     let emailData = `Please use system generated password : ${randomPassword}`
     let toMail = req.query.userEmail;
 
-    if (req.headers['rolecode'] === 'EMP' || req.headers['rolecode'] === 'TL') {
-      emailData = `Password has been reset for the ${req.headers['rolecode']} : ${req.query.userEmail}, Password: ${randomPassword}`
-      toMail = dbResponse[0][0][0].email;
+    const roleResponse = await dbOps.crud('usp_getUserRole', [req.query.userEmail])
+
+    if (roleResponse[0][0].length > 0) {
+      if (roleResponse[0][0][0].roleCode === 'EMP' || roleResponse[0][0][0].roleCode === 'TL') {
+        emailData = `Password has been reset for the ${roleResponse[0][0][0].roleCode} : ${req.query.userEmail}, Password: ${randomPassword}`
+        toMail = dbResponse[0][0][0].email;
+      }
     }
 
     const transporter = nodemailer.createTransport({

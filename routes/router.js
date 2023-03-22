@@ -196,7 +196,7 @@ router.post('/api/updateUserPassword', auth, logRequest, async (req, res) => {
   await controller.updateUserPassword(req, res)
 })
 
-router.get('/api/resetUserPassword', auth, logRequest, async (req, res) => {
+router.get('/api/resetUserPassword', logRequest, async (req, res) => {
   await controller.resetUserPassword(req, res)
 })
 
